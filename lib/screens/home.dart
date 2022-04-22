@@ -20,6 +20,9 @@ class HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _listTask = [];
   bool isLoading = true;
   User? user;
+  List<num> statistic = [
+    0, 0, 0, 0, 0.0
+  ];
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class HomeScreenState extends State<HomeScreen> {
       setState(() {
         _listTask = value;
         isLoading = false;
+        statistic = Task.getStatistic(_listTask);
       });
     });
   }
@@ -62,43 +66,71 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: BaseAppBar(titlePage: "Dashboard", context: context),
       drawer: BaseDrawer(user!),
-      body: isLoading ? 
-        const Center(child: CircularProgressIndicator())
-        : Container(
-          padding: const EdgeInsets.only(
-            top: 16.0
-          ),
-          child: Column(
-            children: [
-              Title(
-                color: const Color.fromARGB(255, 17, 18, 26),
-                child: const Text(
-                  "List of tasks",
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Container(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 124,
+                  child: Center(
+                    child: Image.asset(
+                      'form.png',
+                      width: 120,
+                    ),
                   ),
-                )
-              ),
-              _listTask.isEmpty 
-              ? Container(
-                alignment: Alignment.topCenter,
-                padding: const EdgeInsets.all(8.0),
-                child: const Text("No task for a moment."),
-              )
-              : ListView.builder(
-                itemCount: _listTask.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(16.0),
-                itemBuilder: (context, index) {
-                  var user = _listTask[index];
-                  return _buildRow(user);
-                }
-              )
-            ],
-          ),
-      ),
+                ),
+                const Text("Task statistics"),
+                const SizedBox(height: 20),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.task),
+                    title: const Text("Total of tasks"),
+                    subtitle: Text(statistic[0].toString()),
+                  )
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.task),
+                    title: const Text("Total of tasks in schedule"),
+                    subtitle: Text(statistic[1].toString()),
+                  )
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.task),
+                    title: const Text("Total of tasks in schedule (High priority)"),
+                    subtitle: Text(statistic[2].toString()),
+                  )
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.task),
+                    title: const Text("Total of tasks in schedule (Low priority)"),
+                    subtitle: Text(statistic[3].toString()),
+                  )
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.task),
+                    title: const Text("Mid time of tasks processed"),
+                    subtitle: Text(statistic[4].toString()),
+                  )
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed("list_task");
+                  },
+                  child: const Text("View tasks")
+                ),
+                const SizedBox(height: 20)
+              ]
+            )
+          )
+        )
+      ),  
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 17, 18, 26),
         onPressed: () {

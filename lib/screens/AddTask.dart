@@ -167,7 +167,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         }
                       }
                     ),
-                    const Text("Hight", style: TextStyle(color: Colors.red)),
+                    const Text("High", style: TextStyle(color: Colors.red)),
                   ],
                 ),
                 const SizedBox(

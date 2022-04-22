@@ -76,7 +76,7 @@ class _UserState extends State<MainScreen> {
   }
 
   Widget showStatus(var task) {
-    if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) < 0) {
+    if(DateTime.parse(task["dateStart"]).compareTo(DateTime.now()) < 0) {
       return Column(children: [
         const Text("Waiting", style: TextStyle(color: Colors.blue)),
         SizedBox(height: 15,
@@ -99,7 +99,7 @@ class _UserState extends State<MainScreen> {
           ),
         )
       ]);
-    } else if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) == 0) {
+    } else if(DateTime.parse(task["dateStart"]).compareTo(DateTime.now()) > 0 && DateTime.now().compareTo(DateTime.parse(task["dateEnd"])) < 0) {
       return Column(children: [
         const Text("Processing", style: TextStyle(color: Colors.green)),
         SizedBox(height: 15,

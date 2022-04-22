@@ -13,4 +13,16 @@ class Task {
       task = value;
     });
   }
+
+  static List<num> getStatistic(List<Map<String, dynamic>> tasks) {
+    List<num> statistic = [0, 0, 0, 0, 0];
+
+    statistic[0] = tasks.length;
+    statistic[1] = tasks.where((task) => DateTime.parse(task["dateStart"]).compareTo(DateTime.now()) < 0).length;
+    statistic[2] = tasks.where((task) => DateTime.parse(task["dateStart"]).compareTo(DateTime.now()) < 0 && task["priority"] == 3).length;
+    statistic[3] = tasks.where((task) => DateTime.parse(task["dateStart"]).compareTo(DateTime.now()) < 0 && task["priority"] == 1).length;
+    //var tasks_processed = tasks.where((task) => DateTime.now().compareTo(DateTime.parse(task["dateEnd"])) > 0);
+
+    return statistic;
+  }
 }
