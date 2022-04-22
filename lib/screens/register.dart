@@ -1,7 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
+import 'package:userlist/Models/User.dart';
+
 import 'package:userlist/components/appbar.dart';
+import 'package:userlist/components/password_field.dart';
 import 'package:userlist/sql_db/sql_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -12,19 +18,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 
-// "id" : 1,
-// "first_name" : "Luap",
-// "name" : "Dever",
-// "birthday" : DateTime.now(),
-// "adress" : "Ad058 Est",
-// "phone" : "22951486388",
-// "mail" : "example@gmail.com",
-// "gender" : "masculin",
-// "picture" : "http://localhost:8000/img/test.jpg",
-// "citation" : "Take more courage for flying high"
-
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState<String>> _passwordFieldKey = GlobalKey<FormFieldState<String>>();
+
   bool isLoading = false;
 
   String? firstName;
@@ -32,46 +29,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? name;
   final nameController = TextEditingController();
-
-  DateTime? birthday;
-  final birthdayController = TextEditingController();
-
-  String? adress;
-  final adressController = TextEditingController();
-
-  String? phone;
-  final phoneController = TextEditingController();
   
-  String? mail;
-  final mailController = TextEditingController();
+  String? telephone;
+  final telephoneController = TextEditingController();
 
-  String? gender;
-  final genderController = TextEditingController();
+  String? pseudo;
+  final pseudoController = TextEditingController();
 
-  String? citation;
-  final citationController = TextEditingController();
+  String? password;
+  final passwordController = TextEditingController();
 
-  String? picture;
-  File? imageFile;
-
-  String dateFormat(DateTime date) {
-    if(date == null) {
-      return "";
-    }
-    return date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
-  } 
 
   _showMsg(msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-          label: 'Close',
-          onPressed: () {
-            // Code to execute.
-          },
-        ),
-      ),
+    Toast.show(
+      msg, 
+      context, 
+      duration: Toast.LENGTH_LONG, 
+      gravity:  Toast.BOTTOM
     );
   }
 
@@ -82,262 +56,218 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.initState();
 
     setState(() {
-      birthday = DateTime.parse("2000-01-01");
+      
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return Scaffold(
-      appBar: BaseAppBar(titlePage: "Register", context: context),
-      body: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Center(
-          child: SingleChildScrollView(
-              child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const Text(
-                  'Your informations ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                    color: Color.fromRGBO(17, 0, 104, 1)
-                  ),
-                ),
-                const SizedBox(
-                  height: 25,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.text,
-                  controller: firstNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'First Name',
-                    prefixIcon: Icon(Icons.supervised_user_circle_outlined),
-                  ),
-                  validator: (firstNameValue) {
-                    if (firstNameValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    firstName = firstNameValue;
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.text,
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Last Name',
-                    prefixIcon: Icon(Icons.supervised_user_circle_outlined),
-                  ),
-                  validator: (nameValue) {
-                    if (nameValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    name = nameValue;
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.none,
-                  controller: TextEditingController(text: dateFormat(birthday!)),
-                  decoration: const InputDecoration(
-                    labelText: 'Birth Date',
-                    prefixIcon: Icon(Icons.calendar_month_outlined),
-                  ),
-                  onTap: () async {
-                    DateTime? dateTime = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.parse("2000-01-01"),
-                      firstDate: DateTime.parse("1960-01-01"),
-                      lastDate: DateTime.now()
-                    );
-                    
-                    if(mounted && dateTime != null) {
-                      setState(() {
-                        birthday = dateTime;
-                      });
-                    }
-                  },
-                  validator: (birthdayValue) {
-                    if (birthdayValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  controller: mailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Adress',
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  validator: (emailValue) {
-                    if (emailValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    mail = emailValue;
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.streetAddress,
-                  controller: adressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Adress',
-                    prefixIcon: Icon(Icons.location_city),
-                  ),
-                  validator: (adressValue) {
-                    if (adressValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    adress = adressValue;
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.phone,
-                  controller: phoneController,
-                  decoration: const InputDecoration(
-                      labelText: 'Telephone Number',
-                      prefixIcon: Icon(Icons.phone)),
-                  validator: (phoneValue) {
-                    if (phoneValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    phone = phoneValue;
-                    return null;
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: const [
-                    Text("Gender")
-                  ],
-                ),
-                Row(
+        body: Column(
+          children: [
+            SizedBox(
+                height: 300,
+                width: 500,
+                child: Column(
                   children: [
-                    Radio(
-                      value: "male",
-                      groupValue: gender,
-                      onChanged: (String? value) {
-                        if(value != null) {
-                          setState(() {
-                            gender = value;
-                          });
-                        }
-                      }
-                    ),
-                    const Text("Male"),
-                    const SizedBox(width: 10),
-                    Radio(
-                      value: "female",
-                      groupValue: gender,
-                      onChanged: (String? value) {
-                        if(value != null) {
-                          setState(() {
-                            gender = value;
-                          });
-                        }
-                      }
-                    ),
-                    const Text("Female"),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: citationController,
-                  decoration: const InputDecoration(
-                      hintText: 'Citation',
-                  ),
-                  validator: (citationValue) {
-                    if (citationValue!.isEmpty) {
-                      return 'This field is required';
-                    }
-                    citation = citationValue;
-                    return null;
-                  },
-                  maxLines: 4,
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  width: double.infinity,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: MaterialButton(
-                    onPressed: () {
-                      _saveUser();
-                    },
-                    color: Colors.blue,
-                    child: isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                      "Save",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 300.0, top: 50),
+                      child: Column(
+                        children: [
+                          IconButton(
+                              onPressed:(){
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Color.fromARGB(255, 17, 18, 26),
+                                size: 23,
+                              )
+                          )
+                        ],
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-              ],
+                    Column(
+                      children: [
+                        Image.asset(
+                          'assets/icon.png',
+                          width: 130,
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        const Text("Registrer",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 17, 18, 26),
+                              fontSize:20,
+                              fontFamily: "Raleway",
+                            )),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    )
+                  ],
+                )
             ),
-          )),
+            Expanded(
+                child:Padding(
+                  padding: const EdgeInsets.only(left:50.0, right:50.0, top:0),
+                  child: Container(
+                    child: SingleChildScrollView(
+                        child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            controller: firstNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'First Name',
+                              prefixIcon: Icon(Icons.supervised_user_circle_outlined),
+                            ),
+                            validator: (firstNameValue) {
+                              if (firstNameValue!.isEmpty) {
+                                return 'This field is required';
+                              }
+                              firstName = firstNameValue;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Last Name',
+                              prefixIcon: Icon(Icons.supervised_user_circle_outlined),
+                            ),
+                            validator: (nameValue) {
+                              if (nameValue!.isEmpty) {
+                                return 'This field is required';
+                              }
+                              name = nameValue;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.phone,
+                            controller: telephoneController,
+                            decoration: const InputDecoration(
+                              labelText: 'Telephone',
+                              prefixIcon: Icon(Icons.phone),
+                            ),
+                            validator: (telephoneValue) {
+                              if (telephoneValue!.isEmpty) {
+                                return 'This field is required';
+                              }
+                              telephone = telephoneValue;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.streetAddress,
+                            controller: pseudoController,
+                            decoration: const InputDecoration(
+                              labelText: 'Pseudo',
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            validator: (pseudoValue) {
+                              if (pseudoValue!.isEmpty) {
+                                return 'This field is required';
+                              }
+                              pseudo = pseudoValue;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          PasswordField(
+                            fieldkey: _passwordFieldKey,
+                            helperText: "No more than 8 characters.",
+                            labelText: "Password *",
+                            validator: (passwordValue) {
+                              if (passwordValue!.isEmpty) {
+                                return 'This field is required';
+                              }
+                              password = passwordValue;
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Container(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: MaterialButton(
+                              onPressed: () {
+                                _saveUser();
+                              },
+                              color: Colors.blue,
+                              child: isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text(
+                                "Save",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                            const Text("You already have an account... "),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushReplacementNamed("login");
+                              },
+                              child:  const Text(
+                                "Login",
+                                style: TextStyle(color: Colors.blue),
+                              )
+                            )
+                          ],)
+                        ],
+                      ),
+                    )),
+                  ),
+                )
+            )
+          ],
         ),
-      ),
     );
   }
 
-  _saveUser() {
+  _saveUser() async{
     if (_formKey.currentState!.validate()) {
       isLoading = true;
-      var data = {
-        'mail': mail,
-        'firstName': firstName,
-        'name': name,
-        'phone': phone,
-        'adress': adress,
-        'gender': gender,
-        'citation': citation,
-        'birthday': dateFormat(birthday!),
-        "picture": picture
-      };
+      User user = User.withBody(firstName, name, telephone, pseudo, password);
 
-      SQLHelper.createItem(data).then((value) {
-        if(value != 0) {
-          _showMsg("User registred successfully.");
-          Navigator.of(context).pushReplacementNamed("list_user");
+      user.save().then((value) {
+        if(value) {
+          _showMsg("User successfully registered.");
+          Navigator.of(context).pushReplacementNamed("login");
         } else {
-          _showMsg("User not registred.");
+          _showMsg("An error is occured.");
         }
       });
     } else {

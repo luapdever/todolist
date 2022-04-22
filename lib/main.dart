@@ -3,6 +3,8 @@ import 'package:userlist/screens/ListTaskScreen.dart';
 import 'package:userlist/screens/Task.dart';
 import 'package:userlist/screens/home.dart';
 import 'package:userlist/screens/login.dart';
+import 'package:userlist/screens/modify_task.dart';
+import 'package:userlist/screens/modifyuser.dart';
 import 'package:userlist/screens/register.dart';
 
 import 'screens/welcome.dart';
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         "register": (context) => RegisterScreen(),
         "task": (context) => TaskScreen(),
         "add_task": (context) => AddTaskScreen(),
+        "update_task": (context) => UpdateTaskScreen(),
+        "update_user": (context) => ModifyUserScreen(),
       },
     );
   }

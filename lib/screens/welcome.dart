@@ -13,98 +13,130 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  String? name;
-  TextStyle textStyle = const TextStyle( color: Colors.white, letterSpacing: 12 );
-  String timeOfDday = "Loading...";
-  Timer? _timer;
-
-  _date_time() {
-    var now_time = DateTime.now();
-    setState(() {
-      timeOfDday = now_time.hour.toString().padLeft(2, '0') + " : "
-                  + now_time.minute.toString().padLeft(2, '0') + " : "
-                  + now_time.second.toString().padLeft(2, '0');
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _timer = timer;
-      });
-      _date_time();
-    });
-    Timer(const Duration(milliseconds: 1300), () {
-      setState(() {
-        textStyle = const TextStyle( color: Color(0xFF110068), letterSpacing: 0 );
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer!.cancel();
-    super.dispose();
-  }
+  Widget Top=Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      const SizedBox(
+        height: 50,
+      ),
+      Image.asset(
+        'assets/icon.png',
+        width: 150,
+      ),
+      const Text("TO DO",
+        style: TextStyle(
+          fontSize: 40,
+          fontWeight: FontWeight.w900,
+        ),),
+      const Text("Reminds Everythings",
+        style: TextStyle(
+            fontSize: 17,
+            fontFamily: "Raleway",
+            color: Colors.grey
+        ),),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("list_bg.jpg"),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.black, BlendMode.softLight),
-          )
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                AnimatedDefaultTextStyle(
-                  style: textStyle,
-                  duration: const Duration(seconds: 1),
-                  child: const Text(
-                    "Welcome !",
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  timeOfDday,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 40.0,
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed("login");
-                      },
-                      child: const Text("Login")
-                    ),
-                  ],
-                )
-              ],
+      backgroundColor:const Color.fromARGB(243, 243, 243, 243),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            height: 400,
+            width: 500,
+            color:const Color.fromARGB(243, 243, 243, 243),
+            child:Container(
+              child: Top,
             )
           ),
-        ),
-      ),
+          Expanded(
+              child: Container(
+                width: 500,
+                color: const Color.fromARGB(255, 17, 18, 26),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      child:ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed("register");
+                          },
+                          style:ElevatedButton.styleFrom(
+                            primary:const Color.fromARGB(255, 11, 11, 19),
+                            onPrimary: Colors.white,
+                            shadowColor: Colors.white60,
+                            elevation: 5,
+                            shape: const StadiumBorder(),
+                          ),
+                          icon:const Icon(Icons.perm_identity_sharp),
+                          label: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text("Registrer",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 23,
+                                )
+                            ),
+                          )
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    Container(
+                      child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed("login");
+                          },
+                          style:ElevatedButton.styleFrom(
+                            primary:const Color.fromARGB(255, 11, 11, 19),
+                            onPrimary: Colors.white,
+                            shadowColor: Colors.white60,
+                            elevation: 5,
+                            shape: const StadiumBorder(),
+                          ),
+                          icon:const Icon(Icons.people_alt_outlined),
+                          label: const Padding(
+                            padding: EdgeInsets.only(top:10.0, bottom:10.0, right:30.0,left: 30.0),
+                            child: Text("Login",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 23,
+                                )
+                            ),
+                          )
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Text("Entrust us with your notes, we take care of everything",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: "Raleway",
+                    )
+                    ),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                  ],
+                ),
+
+          )
+          )
+
+        ]
+      )
     );
   }
-  // Widget build(BuildContext context) {
-  //   return Container();
-  // }
 }

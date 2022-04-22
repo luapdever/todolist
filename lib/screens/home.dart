@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:userlist/Models/Arguments/UserArguments.dart';
+import 'package:userlist/Models/Arguments/TaskArguments.dart';
 import 'package:userlist/Models/Task.dart';
+import 'package:userlist/Models/User.dart';
 import 'package:userlist/components/appbar.dart';
+import 'package:userlist/components/drawer.dart';
 import 'package:userlist/sql_db/sql_helper.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,11 +19,17 @@ class HomeScreenState extends State<HomeScreen> {
 
   List<Map<String, dynamic>> _listTask = [];
   bool isLoading = true;
+  User? user;
 
   @override
   void initState() {
     super.initState();
     
+    User.getUserFromStorage().then((value) {
+      setState(() {
+        user = value;
+      });
+    });
     SQLHelper.getItems().then((value) {
       setState(() {
         _listTask = value;
@@ -36,7 +44,7 @@ class HomeScreenState extends State<HomeScreen> {
         onTap: () {
           Navigator.of(context).pushNamed(
             "task",
-            arguments: UserArguments(task["id"], task["name"])
+            arguments: TaskArguments(task["id"], task["name"])
           );
         },
         child: ListTile(
@@ -52,7 +60,8 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(titlePage: "List", context: context),
+      appBar: BaseAppBar(titlePage: "Dashboard", context: context),
+      drawer: BaseDrawer(user!),
       body: isLoading ? 
         const Center(child: CircularProgressIndicator())
         : Container(
@@ -62,7 +71,7 @@ class HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Title(
-                color: const Color.fromRGBO(17, 0, 104, 1),
+                color: const Color.fromARGB(255, 17, 18, 26),
                 child: const Text(
                   "List of tasks",
                   style: TextStyle(
@@ -91,7 +100,7 @@ class HomeScreenState extends State<HomeScreen> {
           ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(17, 0, 104, 1),
+        backgroundColor: const Color.fromARGB(255, 17, 18, 26),
         onPressed: () {
           Navigator.of(context).pushNamed("add_task");
         },

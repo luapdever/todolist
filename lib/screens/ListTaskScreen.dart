@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:userlist/Models/Arguments/UserArguments.dart';
+import 'package:userlist/Models/Arguments/TaskArguments.dart';
 import 'package:userlist/Models/Task.dart';
 import 'package:userlist/components/appbar.dart';
 import 'package:userlist/sql_db/sql_helper.dart';
@@ -30,20 +30,80 @@ class _ListTaskScreenState extends State<ListTaskScreen> {
     });
   }
 
+  Widget showStatus(var task) {
+    if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) < 0) {
+      return Column(children: const [
+        Text("Waiting", style: TextStyle(color: Colors.blue)),
+      ]);
+    } else if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) == 0) {
+      return Column(children: const [
+        Text("Processing", style: TextStyle(color: Colors.green)),
+      ]);
+    } else {
+      return Column(children: const [
+        Text("Finished", style: TextStyle(color: Colors.blue))
+      ]);
+    }
+  }
+
   Widget _buildRow(var task) {
     return Card(
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).pushNamed(
             "task",
-            arguments: UserArguments(task["id"], task["name"])
+            arguments: TaskArguments(task["id"], task["name"])
           );
         },
         child: ListTile(
-          title: Text(task["name"]),
-          subtitle: Text(task["priority"].toString()),
-          trailing: const Icon(Icons.remove_red_eye_outlined)
-        ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 5.0, top:10),
+            child: Text(task["name"],
+              style: const TextStyle(
+                fontFamily: "Raleway",
+              )
+            ),
+          ),
+          subtitle: Column(
+            children:  [
+              Text(task["description"],
+                style: const TextStyle(
+                  letterSpacing: 1,
+                ),
+                textAlign: TextAlign.justify,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  showStatus(task),
+                  IconButton(
+                    onPressed: (){
+                      Navigator.of(context).pushNamed(
+                        "task",
+                        arguments: TaskArguments(task["id"], task["name"])
+                      );
+                    },
+                    icon: const Icon(Icons.remove_red_eye_outlined),
+                  ),
+                  IconButton(
+                    onPressed: (){
+                      Navigator.of(context).pushNamed(
+                        "update_task",
+                        arguments: TaskArguments(task["id"], task["name"])
+                      );
+                    },
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                  ),
+                  IconButton(
+                    onPressed: (){},
+                    icon: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
+                  ),
+                ],
+              )
+            ],
+          )
+        )
       )
     );
   }
@@ -52,7 +112,7 @@ class _ListTaskScreenState extends State<ListTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(titlePage: "List", context: context),
+      appBar: BaseAppBar(titlePage: "Home", context: context),
       body: isLoading ? 
         const Center(child: CircularProgressIndicator())
         : Container(
@@ -62,7 +122,7 @@ class _ListTaskScreenState extends State<ListTaskScreen> {
           child: Column(
             children: [
               Title(
-                color: const Color.fromRGBO(17, 0, 104, 1),
+                color: const Color.fromARGB(255, 17, 18, 26),
                 child: const Text(
                   "List of tasks",
                   style: TextStyle(
@@ -91,7 +151,7 @@ class _ListTaskScreenState extends State<ListTaskScreen> {
           ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(17, 0, 104, 1),
+        backgroundColor: const Color.fromARGB(255, 17, 18, 26),
         onPressed: () {
           Navigator.of(context).pushNamed("add_task");
         },

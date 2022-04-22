@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 import 'dart:convert';
-import 'package:userlist/Models/Arguments/UserArguments.dart';
+import 'package:userlist/Models/Arguments/TaskArguments.dart';
 import 'package:userlist/Models/Task.dart';
 import 'package:userlist/components/appbar.dart';
 import 'package:userlist/sql_db/sql_helper.dart';
@@ -16,7 +17,7 @@ class TaskScreen extends StatelessWidget {
     return MaterialApp(
       title: "ToDoList",
       onGenerateRoute: (settings) {
-        final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
+        final args = ModalRoute.of(context)!.settings.arguments as TaskArguments;
 
         return MaterialPageRoute(
             builder: (context) {
@@ -55,6 +56,95 @@ class _UserState extends State<MainScreen> {
     });
   }
 
+  String showPriority(var priority) {
+    String output;
+    switch (priority) {
+      case 1:
+        output = "Low";
+        break;
+      case 2:
+        output = "Normal";
+        break;
+      case 3:
+        output = "High";
+        break;
+      default:
+        output = "Normal";
+    }
+
+    return output;
+  }
+
+  Widget showStatus(var task) {
+    if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) < 0) {
+      return Column(children: [
+        const Text("Waiting", style: TextStyle(color: Colors.blue)),
+        SizedBox(height: 15,
+          child: ElevatedButton(
+            child: const Text("Start it"),
+            onPressed: () {
+              var data = {
+                "id": _task["id"],
+                "dateStart": dateFormat(DateTime.now())
+              };
+              SQLHelper.updateItem(data).then((value) {
+                if(value != 0) {
+                  _showMsg("Task started successfully.");
+                  Navigator.of(context).pushReplacementNamed("list_task");
+                } else {
+                  _showMsg("Task not started.");
+                }
+              });
+            },
+          ),
+        )
+      ]);
+    } else if(DateTime.parse(task["dateStart"]).compareTo(DateTime.parse(task["dateEnd"])) == 0) {
+      return Column(children: [
+        const Text("Processing", style: TextStyle(color: Colors.green)),
+        SizedBox(height: 15,
+          child: ElevatedButton(
+            child: const Text("End it"),
+            onPressed: () {
+              var data = {
+                "id": _task["id"],
+                "dateEnd": dateFormat(DateTime.now())
+              };
+              SQLHelper.updateItem(data).then((value) {
+                if(value != 0) {
+                  _showMsg("Task ended successfully.");
+                  Navigator.of(context).pushReplacementNamed("list_task");
+                } else {
+                  _showMsg("Task not ended.");
+                }
+              });
+            },
+          ),
+        )
+      ]);
+    } else {
+      return Column(children: const [
+        Text("")
+      ]);
+    }
+  }
+
+  String dateFormat(DateTime date) {
+    if(date == null) {
+      return "";
+    }
+    return date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
+  } 
+
+  _showMsg(msg) {
+    Toast.show(
+      msg, 
+      context, 
+      duration: Toast.LENGTH_LONG, 
+      gravity:  Toast.BOTTOM
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,51 +161,110 @@ class _UserState extends State<MainScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Title(
-                    color: const Color.fromRGBO(17, 0, 104, 1),
-                    child: Text(
-                      _task["name"],
-                      style: const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold
+                  SizedBox(
+                    height: 124,
+                    child: Center(
+                      child: Image.asset(
+                        'form.png',
+                        width: 120,
                       ),
-                    )
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(_task["description"].toString()),
-                  const SizedBox(height: 20),
-                  Card(child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person),
-                        const SizedBox(width: 5),
-                        Text(_task["priority"].toString())
-                      ],
-                    ),
-                  )),
-                  Card(child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.date_range),
-                        const SizedBox(width: 5),
-                        Text(_task["dateStart"].toString())
-                      ],
-                    ),
-                  )),
-                  Card(child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.date_range),
-                        const SizedBox(width: 5),
-                        Text(_task["dateEnd"].toString())
-                      ],
-                    ),
-                  )),
+                  Column(
+                    children:  [
+                      SizedBox(
+                        height: 50,
+                        child: Center(
+                          child: Text(_task["name"],
+                            style: const TextStyle(
+                              fontFamily: "Raleway",
+                              fontSize: 15,
+                              letterSpacing: 3,
+                            )
+                          ),
+                        ),
+                      ),
+                      const Text("DescriptionTask",
+                        style: TextStyle(
+                          fontFamily: "Raleway",
+                          fontSize: 15,
+                          letterSpacing: 3,
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(_task["description"],
+                          style: const TextStyle(
+                            fontFamily: "RalewayN",
+                            fontWeight: FontWeight.w500
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 70,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 70),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(_task["dateStart"],
+                                    style: const TextStyle(
+                                        fontFamily: "RalewayN",
+                                        fontWeight: FontWeight.w600
+                                    ),),
+                                ),
+                              ),
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(_task["dateEnd"],
+                                    style: const TextStyle(
+                                        fontFamily: "RalewayN",
+                                        fontWeight: FontWeight.w600
+                                    ),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Text(showPriority(_task["priority"]),
+                            style: const TextStyle(
+                                fontFamily: "Raleway",
+                            ),),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      showStatus(_task)
+                    ],
+                  ),
+                  Expanded(
+                      child:Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed("update_task");
+                            },
+                            icon: const Icon(Icons.edit, color:Colors.blue),
+                          ),
+                          IconButton(
+                            onPressed: () {  },
+                            icon: const Icon(Icons.delete, color:Colors.red),
+                          ),
+                        ],
+                      ))
+
                 ],
-              )
+              ),
             ),
           ),
         ),

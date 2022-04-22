@@ -1,34 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
+import 'package:userlist/Models/Arguments/TaskArguments.dart';
+import 'package:userlist/Models/Task.dart';
 import 'package:userlist/components/appbar.dart';
 import 'package:userlist/sql_db/sql_helper.dart';
-import 'package:toast/toast.dart';
 
-class AddTaskScreen extends StatefulWidget {
-  AddTaskScreen({Key? key}) : super(key: key);
+
+class UpdateTaskScreen extends StatelessWidget {
+  const UpdateTaskScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddTaskScreen> createState() => _AddTaskScreenState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "ToDoList",
+      onGenerateRoute: (settings) {
+        final args = ModalRoute.of(context)!.settings.arguments as TaskArguments;
+
+        return MaterialPageRoute(
+            builder: (context) {
+              return MainScreen(idUser: args.id, fullName: args.fullName);
+            },
+        );
+      },
+    );
+  }
 }
 
+class MainScreen extends StatefulWidget {
+  late int idUser;
+  late String fullName;
 
-class _AddTaskScreenState extends State<AddTaskScreen> {
-  final _formKey = GlobalKey<FormState>();
-  bool isLoading = false;
+  MainScreen({Key? key, required this.idUser, required this.fullName }) : super(key: key);
+
+  @override
+  State<MainScreen> createState() => _UserState();
+}
+
+class _UserState extends State<MainScreen> {
+
+final _formKey = GlobalKey<FormState>();
 
   String? name;
-  final nameController = TextEditingController();
-
   DateTime? dateStart;
-  final dateStartController = TextEditingController();
-
   DateTime? dateEnd;
-  final dateEndController = TextEditingController();
-
   int? priority;
-  final priorityController = TextEditingController();
-
   String? description;
-  final descriptionController = TextEditingController();
 
 
   String dateFormat(DateTime date) {
@@ -47,21 +63,34 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
+  Map<String, dynamic> _task = {};
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
 
-    setState(() {
-      dateStart = DateTime.parse(DateTime.now().toString());
-      dateEnd = dateStart!.add(const Duration(days: 1));
+    SQLHelper.getItem(widget.idUser).then((value) {
+      setState(() {
+        _task = value[0];
+        priority = _task["priority"];
+        dateStart = DateTime.parse(_task["dateStart"]);
+        dateEnd = DateTime.parse(_task["dateEnd"]);
+        isLoading = false;
+      });
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BaseAppBar(titlePage: "Register", context: context),
-      body: Padding(
+      body: isLoading 
+        ? const Center(
+          child: CircularProgressIndicator(),
+        )
+        : Padding(
         padding: const EdgeInsets.all(30),
         child: Container(
           child: SingleChildScrollView(
@@ -103,7 +132,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
                 TextFormField(
                   keyboardType: TextInputType.text,
-                  controller: nameController,
+                  controller: TextEditingController(text: _task["name"]),
                   decoration: const InputDecoration(
                     labelText: 'Task name',
                     prefixIcon: Icon(Icons.supervised_user_circle_outlined),
@@ -174,7 +203,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   height: 20,
                 ),
                 TextFormField(
-                  controller: descriptionController,
+                  controller: TextEditingController(text: _task["description"]),
                   decoration: const InputDecoration(
                       hintText: 'Description',
                   ),
@@ -202,7 +231,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     DateTime? dateTime = await showDatePicker(
                       context: context,
                       initialDate: DateTime.parse(dateFormat(dateStart!)),
-                      firstDate: DateTime.parse(dateFormat(dateStart!)),
+                      firstDate: DateTime.parse(dateFormat(DateTime.now())),
                       lastDate: DateTime.parse("2032-12-29"),
                     );
                     
@@ -294,6 +323,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (_formKey.currentState!.validate()) {
       isLoading = true;
       var data = {
+        "id": _task["id"],
         'name': name,
         'priority': priority,
         'description': description,
@@ -301,12 +331,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         'dateEnd': dateFormat(dateEnd!),
       };
 
-      SQLHelper.createItem(data).then((value) {
+      SQLHelper.updateItem(data).then((value) {
         if(value != 0) {
-          _showMsg("Task added successfully.");
+          _showMsg("Task updated successfully.");
           Navigator.of(context).pushReplacementNamed("list_task");
         } else {
-          _showMsg("Task not added.");
+          _showMsg("Task not updated.");
         }
       });
     } else {

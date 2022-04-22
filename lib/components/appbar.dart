@@ -12,7 +12,7 @@ class BaseAppBar extends AppBar {
   }
 
   BaseAppBar({ Key? key, required this.titlePage, required BuildContext context }) : super(key: key, 
-    backgroundColor: const Color.fromRGBO(17, 0, 104, 1),
+    backgroundColor: const Color.fromARGB(255, 17, 18, 26),
       title: Wrap(
         children: [
           Text(smallTitle(titlePage))
