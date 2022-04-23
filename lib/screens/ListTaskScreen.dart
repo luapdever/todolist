@@ -96,7 +96,10 @@ class _ListTaskScreenState extends State<ListTaskScreen> {
                     icon: const Icon(Icons.edit, color: Colors.blue),
                   ),
                   IconButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      SQLHelper.deleteItem(task["id"]);
+                      Navigator.of(context).pushReplacementNamed("list_task");
+                    },
                     icon: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
                   ),
                 ],

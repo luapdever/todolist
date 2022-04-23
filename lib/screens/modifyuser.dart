@@ -23,10 +23,9 @@ class _ModifyUserScreenState extends State<ModifyUserScreen> {
 
   _showMsg(msg) {
     Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
+        msg,
+        duration: Toast.lengthLong,
+        gravity:  Toast.bottom
     );
   }
 
@@ -176,15 +175,15 @@ class _ModifyUserScreenState extends State<ModifyUserScreen> {
 
       user!.save().then((value) {
         if(value) {
-          _showMsg("User successfully updated.");
+          //_showMsg("User successfully updated.");
           Navigator.of(context).pushReplacementNamed("home");
         } else {
-          _showMsg("An error is occured.");
+          //_showMsg("An error is occured.");
         }
       });
     } else {
       isLoading = false;
-      _showMsg("Some field is missed.");
+      //_showMsg("Some field is missed.");
     }
   }
 }

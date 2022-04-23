@@ -42,10 +42,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   _showMsg(msg) {
     Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
+        msg,
+        duration: Toast.lengthLong,
+        gravity:  Toast.bottom
     );
   }
 
@@ -264,15 +263,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       user.save().then((value) {
         if(value) {
-          _showMsg("User successfully registered.");
+          //_showMsg("User successfully registered.");
           Navigator.of(context).pushReplacementNamed("login");
         } else {
-          _showMsg("An error is occured.");
+          //_showMsg("An error is occured.");
         }
       });
     } else {
       isLoading = false;
-      _showMsg("Some field is missed.");
+     // _showMsg("Some field is missed.");
     }
   }
 }

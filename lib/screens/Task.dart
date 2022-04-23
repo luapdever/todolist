@@ -89,10 +89,10 @@ class _UserState extends State<MainScreen> {
               };
               SQLHelper.updateItem(data).then((value) {
                 if(value != 0) {
-                  _showMsg("Task started successfully.");
+                  //_showMsg("Task started successfully.");
                   Navigator.of(context).pushReplacementNamed("list_task");
                 } else {
-                  _showMsg("Task not started.");
+                  //_showMsg("Task not started.");
                 }
               });
             },
@@ -112,10 +112,10 @@ class _UserState extends State<MainScreen> {
               };
               SQLHelper.updateItem(data).then((value) {
                 if(value != 0) {
-                  _showMsg("Task ended successfully.");
+                  //_showMsg("Task ended successfully.");
                   Navigator.of(context).pushReplacementNamed("list_task");
                 } else {
-                  _showMsg("Task not ended.");
+                  //_showMsg("Task not ended.");
                 }
               });
             },
@@ -134,14 +134,13 @@ class _UserState extends State<MainScreen> {
       return "";
     }
     return date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
-  } 
+  }
 
   _showMsg(msg) {
     Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
+        msg,
+        duration: Toast.lengthLong,
+        gravity:  Toast.bottom
     );
   }
 

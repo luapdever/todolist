@@ -27,10 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _showMsg(msg) {
     Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
+      msg,
+      duration: Toast.lengthLong,
+      gravity:  Toast.bottom
     );
   }
 
@@ -201,18 +200,18 @@ class _LoginScreenState extends State<LoginScreen> {
         user.connected = true;
         user.save().then((value) {
           if(value) {
-            _showMsg("User successfully logged.");
+            //_showMsg("User successfully logged.");
             Navigator.of(context).pushReplacementNamed("home");
           } else {
-            _showMsg("An error is occured.");
+            //_showMsg("An error is occured.");
           }
         });
       } else {
-        _showMsg("Pseudo or/and password incorrect(s)");
+        //_showMsg("Pseudo or/and password incorrect(s)");
       }
     } else {
       isLoading = false;
-      _showMsg("Some field is missed.");
+      //_showMsg("Some field is missed.");
     }
   }
 }

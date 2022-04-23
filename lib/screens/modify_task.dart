@@ -52,16 +52,15 @@ final _formKey = GlobalKey<FormState>();
       return "";
     }
     return date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
-  } 
-
-  _showMsg(msg) {
-    Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
-    );
   }
+
+_showMsg(msg) {
+  Toast.show(
+      msg,
+      duration: Toast.lengthLong,
+      gravity:  Toast.bottom
+  );
+}
 
   Map<String, dynamic> _task = {};
   bool isLoading = true;
@@ -333,15 +332,15 @@ final _formKey = GlobalKey<FormState>();
 
       SQLHelper.updateItem(data).then((value) {
         if(value != 0) {
-          _showMsg("Task updated successfully.");
+          //_showMsg("Task updated successfully.");
           Navigator.of(context).pushReplacementNamed("list_task");
         } else {
-          _showMsg("Task not updated.");
+          //_showMsg("Task not updated.");
         }
       });
     } else {
       isLoading = false;
-      _showMsg("Some field is missed.");
+      //_showMsg("Some field is missed.");
     }
   }
 }

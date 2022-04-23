@@ -38,12 +38,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     return date.year.toString() + "-" + date.month.toString().padLeft(2, "0") + "-" + date.day.toString().padLeft(2, "0");
   } 
 
-  _showMsg(msg) {
+  _showMsg(msg, context) {
     Toast.show(
-      msg, 
-      context, 
-      duration: Toast.LENGTH_LONG, 
-      gravity:  Toast.BOTTOM
+      msg,
+      duration: Toast.lengthLong,
+      gravity:  Toast.bottom
     );
   }
 
@@ -303,15 +302,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
       SQLHelper.createItem(data).then((value) {
         if(value != 0) {
-          _showMsg("Task added successfully.");
+          //_showMsg("Task added successfully.");
           Navigator.of(context).pushReplacementNamed("list_task");
         } else {
-          _showMsg("Task not added.");
+          //_showMsg("Task not added.");
         }
       });
     } else {
       isLoading = false;
-      _showMsg("Some field is missed.");
+     // _showMsg("Some field is missed.");
     }
   }
 }

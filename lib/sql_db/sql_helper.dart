@@ -10,8 +10,8 @@ class SQLHelper {
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         priority TEXT NOT NULL,
-        dateStart TIMESTAMP NOT NULL
-        dateEnd TIMESTAMP NOT NULL
+        dateStart TIMESTAMP NOT NULL,
+        dateEnd TIMESTAMP NOT NULL,
         createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
       """);
